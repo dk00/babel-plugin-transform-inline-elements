@@ -1,0 +1,28 @@
+{
+  "name": "@dk00/babel-plugin-transform-inline-elements",
+  "version": "0.0.1",
+  "description": "Turn creactElement calls to diect function calls or objects",
+  "main": "lib/index.js",
+  "scripts": {
+    "prepublish": "lsc -m linked -o lib src/index.ls",
+    "test": "npm run prepublish && istanbul cover lsc test/index",
+    "posttest": "lsc remap"
+  },
+  "repository": "dk00/babel-plugin-transform-inline-elements",
+  "keywords": [
+    "babel-plugin"
+  ],
+  "author": "dk00 <dk00@users.noreply.github.com>",
+  "license": "MIT",
+  "bugs": "https://github.com/dk00/babel-plugin-transform-inline-elements/issues",
+  "homepage": "https://github.com/dk00/babel-plugin-transform-inline-elements#readme",
+  "devDependencies": {
+    "babel-core": "",
+    "babel-plugin-transform-react-jsx": "",
+    "babel-types": "",
+    "istanbul": "",
+    "livescript": "",
+    "remap-istanbul": "",
+    "tape": ""
+  }
+}
