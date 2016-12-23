@@ -1,6 +1,6 @@
 # babel-plugin-transform-inline-elements
 
-Turn creactElement calls to diect function calls or objects.
+Turn `creactElement` calls to direct function calls or objects.
 
 Work in progress
 
