@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "Turn creactElement calls to diect function calls or objects",
   "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "prepublish": "lsc -m linked -o lib src/index.ls",
     "test": "npm run prepublish && istanbul cover lsc test/index",
