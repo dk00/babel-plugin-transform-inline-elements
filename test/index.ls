@@ -1,37 +1,34 @@
-require! fs: {readdirSync, readFileSync} tape: test,\
-\babel-types : types, \babel-core : {transform}, \
-\../lib/index : {func-name}: transform-inline-elements
-babel-options = plugins: [\transform-react-jsx, transform-inline-elements]
+import
+  fs: {read-file-sync}
+  tape: test
+  \babel-core : {transform}
+  \../src/index : inline-element
 
-function pragma-names t
-  desc = 'identify callee of call expressions'
-  expected = 'h React.createElement'
-  items =
-    types.identifier \h
-    types.memberExpression (types.identifier \React), types.identifier \createElement
-  result = items.map func-name .join ' '
-  t.equal result, expected, desc
-
-function compare t, desc, options=babel-options, source, expected
-  {code} = transform source, options
-  t.equal code, expected, desc
-
-function preact-object-element t
-  desc = 'convert preact.h calls to objects'
-  options = plugins:
-    [\transform-react-jsx pragma: \h]
-    [transform-inline-elements, preset: \preact]
-  compare t, desc, options, ...<[sample.jsx sample.preact.js]>map ->
-    readFileSync "test/#it" .toString!
-
-function main t
-  pragma-names t
-  readdirSync \test .forEach (name) ->
-    desc = name.replace /-/g ' '
-    try compare t, desc,, ...<[actual expected]>map ->
-      readFileSync "test/#name/#it.js" .toString!
-  preact-object-element t
-
+function test-all t, cases, options
+  Object.entries cases .for-each ([name, description]) ->
+    [code, expected] = <[actual expected]>map (which) ->
+      read-file-sync "test/#name/#which.jsx" .to-string!trim!
+    actual = transform code, options .code
+    t.equal actual, expected, description
   t.end!
 
-test \Plugin main if require.main == module
+function direct-calls t
+  options = plugins:
+    * \transform-react-jsx use-built-ins: true
+    inline-element
+  cases =
+    \direct-call-no-argument : 'turn elements with attributes into direct calls'
+    \direct-call-arguments : 'convert direct call arguments'
+    \direct-call-children : 'merge children with direct call arguments'
+    \merge-1-argument : 'merge children with props objects'
+    \merge-many-arguments : 'merge children with last props objects'
+    \add-children-property : 'add children as last property'
+    \add-children-object : 'add children as last object'
+    \kebab-cased-type-name : 'support kebab cased type names'
+
+  test-all t, cases, options
+
+function main
+  test 'Direct calls' direct-calls
+
+main!

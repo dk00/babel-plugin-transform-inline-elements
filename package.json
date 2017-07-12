@@ -1,15 +1,16 @@
 {
-  "name": "@dk00/babel-plugin-transform-inline-elements",
+  "name": "babel-plugin-transform-inline-elements",
   "version": "0.0.1",
-  "description": "Turn creactElement calls to diect function calls or objects",
+  "description": "Turn JSX elements into direct function calls or objects",
   "main": "lib/index.js",
-  "files": [
-    "lib"
-  ],
+  "module": "es/index.js",
+  "jsnext:main": "es/index.js",
+  "browser": "dist/index.js",
   "scripts": {
-    "prepublish": "lsc -m linked -o lib src/index.ls",
-    "test": "npm run prepublish && istanbul cover lsc test/index",
-    "posttest": "lsc remap"
+    "prepare": "rollup -c",
+    "pretest": "rollup -c",
+    "test": "nyc --instrument false lsc test/start",
+    "posttest": "nyc report -r lcov -r json && mv coverage/coverage-final.json coverage/coverage.json"
   },
   "repository": "dk00/babel-plugin-transform-inline-elements",
   "keywords": [
@@ -19,13 +20,26 @@
   "license": "MIT",
   "bugs": "https://github.com/dk00/babel-plugin-transform-inline-elements/issues",
   "homepage": "https://github.com/dk00/babel-plugin-transform-inline-elements#readme",
+  "files": [
+    "lib"
+  ],
+  "peerDependencies": {
+    "babel-plugin-transform-react-jsx": ""
+  },
   "devDependencies": {
     "babel-core": "",
+    "babel-plugin-istanbul": "",
+    "babel-plugin-transform-es2015-modules-commonjs": "",
     "babel-plugin-transform-react-jsx": "",
-    "babel-types": "",
-    "istanbul": "",
+    "babel-preset-stage-0": "",
+    "babel-register": "",
     "livescript": "",
-    "remap-istanbul": "",
+    "livescript-next": "",
+    "nyc": "",
+    "preact": "",
+    "react": "",
+    "rollup": "",
+    "rollup-plugin-babel": "",
     "tape": ""
   }
 }

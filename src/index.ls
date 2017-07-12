@@ -1,55 +1,46 @@
-export function func-name => switch it.type
-  | \MemberExpression => "#{func-name it.object}.#{func-name it.property}"
-  | _ => it.name
+t = void
 
-function property t, key, value
-  t.objectProperty (t.identifier key), value
+function merge-objects
+  callee = t.member-expression (t.identifier \Object), t.identifier \assign
+  t.call-expression callee, it
 
-function object t, properties
-  t.objectExpression properties.map ([key, value]) ->
-    property t, key, value
+function last => it?slice -1 .0
+function pack-object
+  if it.arguments
+    it.arguments.push t.object-expression [] if !last that .properties
+    it
+  else merge-objects [t.object-expression []; it, t.object-expression []]
 
-function with-children t, props, children
-  properties = props.properties?slice! || []
-  properties.push property t, \children children
-  t.objectExpression properties
+function pack-children
+  t.object-property (t.identifier \children), t.array-expression it
 
-function inline t, scope, create-element, [type, props, ...rest]
-  children = t.arrayExpression rest
-  if type.type == \StringLiteral && !scope.hasBinding type.value
-    return object t, create-element t, type.value, props, children
+function merge props, children
+  result = if props.properties then props else pack-object props
+  (last result.arguments or result)properties.push pack-children children
+  result
 
-  callee = t.identifier type.value
-  t.callExpression callee, [with-children t, props, children]
-    .._prettyCall = true
+function direct-call type, attributes, ...children
+  props = if t.is-null-literal attributes then t.object-expression []
+  else attributes
+  arg = if children.length == 0 then props else merge props, children
+  t.call-expression type.object, [arg]
 
-function preact-create-element t, name, props, children => properties =
-  [\nodeName t.stringLiteral name]
-  [\attributes props] [\children children]
+!function rewrite-element {scope, {opening-element: {name}}: node}: path
+  type-name = name.name.replace /-([A-z])/g (, head) -> head.to-upper-case!
+  if scope.has-binding type-name
+    name.name = type-name
+    node.opening-element.name = t.JSX-member-expression name, name
+    node._direct-call = true
 
-function react-create-element t, name, props, children => properties =
-  [\type t.stringLiteral name]
-  [\props with-children t, props, children]
-  [\key t.nullLiteral!]
-  [\ref t.nullLiteral!]
+!function rewrite-call {node}: path
+  if node._direct-call
+    node._direct-call = false
+    path.replace-with t.inherits (direct-call ...node.arguments), node
 
-presets =
-  react:
-    pragma: \React.createElement
-    createElement: react-create-element
-  preact:
-    pragma: \h
-    createElement: preact-create-element
+function plugin
+  t := it.types
+  visitor:
+    JSXElement: rewrite-element
+    CallExpression: rewrite-call
 
-function plugin types: t => visitor:
-  CallExpression: exit: ({node, scope}: path, state) !->
-    return unless (func-name node.callee) == state.get \pragma
-    path.replaceWith inline t, scope,
-    (state.get \createElement), node.arguments
-
-  Program: (, state) !->
-    preset = presets[state.opts.preset] || presets.react
-    <[pragma createElement]>forEach ->
-      state.set it, state.opts[it] || preset[it]
-
-module.exports = plugin <<< exports
+export default: plugin
