@@ -3,6 +3,7 @@ import
   tape: test
   \babel-core : {transform}
   \../src/index : inline-element
+  \../src/helpers : {ensure-functional}
 
 function test-all t, cases, options
   Object.entries cases .for-each ([name, description]) ->
@@ -28,7 +29,27 @@ function direct-calls t
 
   test-all t, cases, options
 
+function test-functional t
+  h = (type, props) -> {type, props.value}
+  fn = ->
+  actual = ensure-functional h, fn
+  expected = fn
+  t.equal actual, expected, 'return original function'
+
+  actual = ensure-functional h, \a <| value: \fallback
+  expected = type: \a value: \fallback
+  t.deep-equal actual, expected, 'use create element'
+
+  options = plugins:
+    * \transform-react-jsx use-built-ins: true
+    * inline-element, ensure-functional: true
+  cases =
+    \ensure-functional : 'call components directly only if they are functions'
+
+  test-all t, cases, options
+
 function main
   test 'Direct calls' direct-calls
+  test 'Ensure callable' test-functional
 
 main!

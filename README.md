@@ -114,3 +114,30 @@ require('babel-core').transform('code', {
   plugins: ['transform-react-jsx', 'transform-inline-elements']
 });
 ```
+
+## Options
+
+### `ensureFunctional`
+
+`boolean`, defaults to `false`.
+
+Call components directly only if they are functions.
+
+**In**
+
+```
+import Avatar from './avatar'
+
+const element = <Avatar url={avatarUrl} />
+```
+
+**Out**
+
+```
+import { ensureFunctional as _ensureFunctional } from 'babel-plugin-transform-inline-elements/es/helpers.js';
+import Avatar from './avatar';
+
+const _Avatar = _ensureFunctional(React.createElement, Avatar);
+
+const element = _Avatar({ url: avatarUrl });
+```

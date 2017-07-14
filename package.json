@@ -21,6 +21,7 @@
   "bugs": "https://github.com/dk00/babel-plugin-transform-inline-elements/issues",
   "homepage": "https://github.com/dk00/babel-plugin-transform-inline-elements#readme",
   "files": [
+    "es",
     "lib"
   ],
   "peerDependencies": {
