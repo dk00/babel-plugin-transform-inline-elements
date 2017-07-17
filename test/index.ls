@@ -45,6 +45,7 @@ function test-functional t
     * inline-element, ensure-functional: true
   cases =
     \ensure-functional : 'call components directly only if they are functions'
+    \component-factory : 'wrap components passed function parameters'
 
   test-all t, cases, options
 

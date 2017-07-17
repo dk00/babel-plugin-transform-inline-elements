@@ -31,7 +31,11 @@ function declare-alias pass, [, {_alias}]: args
   t.variable-declaration \const [alias]
 
 function insert-alias path, declareation
-  path.get-statement-parent!insert-after declareation
+  wrap = path.find -> it.is-statement! || it.is-function!
+  if wrap.is-statement! then wrap.insert-after declareation
+  else
+    wrap.node.body = t.to-block wrap.node.body, wrap.node
+    wrap.node.body.body.unshift declareation
 
 function ensure-functional {scope, node}: path, pass
   {callee, arguments: [object: {name}]} = node
