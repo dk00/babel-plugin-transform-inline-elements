@@ -2,8 +2,10 @@ language: node_js
 node_js:
   - node
   - lts/*
-before_install:
-  - npm i -g npm
+before_install: if [[ `npm -v` != 5* ]]; then npm i -g npm; fi
+cache:
+  directories:
+    - node_modules
 after_success:
   - npm i codecov
   - ./node_modules/.bin/codecov

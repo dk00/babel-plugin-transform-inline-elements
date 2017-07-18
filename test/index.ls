@@ -6,11 +6,11 @@ import
   \../src/helpers : {ensure-functional}
 
 function test-all t, cases, options
-  Object.entries cases .for-each ([name, description]) ->
+  Object.keys cases .for-each (name) ->
     [code, expected] = <[actual expected]>map (which) ->
       read-file-sync "test/#name/#which.jsx" .to-string!trim!
     actual = transform code, options .code
-    t.equal actual, expected, description
+    t.equal actual, expected, cases[name]
   t.end!
 
 function direct-calls t

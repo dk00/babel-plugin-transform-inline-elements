@@ -41,6 +41,8 @@ const element = <Avatar url={avatarUrl} />
 
 Works with stateless functional components(render functions) only.
 
+Enable `ensureFunctional` option if there are stateful(classful) components in the app.
+
 ### `shouldComponentUpdate`(sCU)
 
 There's no `sCU` for stateless functional components.
@@ -77,11 +79,13 @@ React internals are required to use these.
 
 ### `defaultProps`, `propTypes`
 
-```
-const handleProps = render => props => {
-  const mergedProps = Object.assign({}, render.defaultProps, props)
-  checkPropTypes(mergedProps, render.propTypes)
-  return render(mergedProps)
+```js
+import PropTypes from 'prop-types'
+
+const handleProps = component => props => {
+  const mergedProps = Object.assign({}, component.defaultProps, props)
+  PropTypes.checkPropTypes(component.propTypes, mergedProps, 'prop', component.displayName)
+  return component(mergedProps)
 }
 ```
 
@@ -123,9 +127,11 @@ require('babel-core').transform('code', {
 
 Call components directly only if they are functions.
 
+Enable this when using stateful components.
+
 **In**
 
-```
+```jsx
 import Avatar from './avatar'
 
 const element = <Avatar url={avatarUrl} />
@@ -133,7 +139,7 @@ const element = <Avatar url={avatarUrl} />
 
 **Out**
 
-```
+```js
 import { ensureFunctional as _ensureFunctional } from 'babel-plugin-transform-inline-elements/es/helpers.js';
 import Avatar from './avatar';
 
